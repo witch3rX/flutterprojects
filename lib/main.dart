@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 void main() {
   runApp(const MyApp());
@@ -55,22 +56,25 @@ class WeatherApp extends StatelessWidget {
   Widget _buildTopSection() {
     return Container(
       padding: const EdgeInsets.all(16.0),
-      child: const Column(
+      child: Column(
         children: <Widget>[
           Text(
             'North America',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
+            style: GoogleFonts.poppins(
+              textStyle: const TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+              ),
             ),
           ),
-          SizedBox(height: 8.0),
+          const SizedBox(height: 8.0),
           Text(
             'Max: 24°  Min: 18°',
-            style: TextStyle(
-              color: Colors.white70,
-              fontSize: 18,
+            style: GoogleFonts.poppins(
+              textStyle: const TextStyle(
+                color: Colors.white70,
+                fontSize: 18,
+              ),
             ),
           ),
         ],
@@ -79,47 +83,79 @@ class WeatherApp extends StatelessWidget {
   }
 
   Widget _buildForecastSection() {
+    // ScrollController to control the ListView
+    final ScrollController _scrollController = ScrollController();
     final List<Map<String, dynamic>> forecasts = [
       {'day': 'Mon', 'temp': 19, 'icon': 'assets/img/weather1.png'},
       {'day': 'Tue', 'temp': 18, 'icon': 'assets/img/weather2.png'},
       {'day': 'Wed', 'temp': 18, 'icon': 'assets/img/weather2.png'},
       {'day': 'Thu', 'temp': 19, 'icon': 'assets/img/weather1.png'},
+      {'day': 'Fri', 'temp': 20, 'icon': 'assets/img/weather1.png'},
+      {'day': 'Sat', 'temp': 22, 'icon': 'assets/img/weather2.png'},
+      {'day': 'Sun', 'temp': 21, 'icon': 'assets/img/weather1.png'},
     ];
+
+    // Function to scroll the list to the next item
+    void _scrollNext() {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.offset + 83,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeIn,
+        );
+      }
+    }
+
+    // Function to scroll the list to the previous item
+    void _scrollPrevious() {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.offset - 83,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    }
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const Text(
+          Text(
             '7-Days Forecasts',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
+            style: GoogleFonts.openSans(
+              textStyle: const TextStyle(
+                color: Colors.white,
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
           const SizedBox(height: 16.0),
           Row(
             children: <Widget>[
-              const Icon(
-                Icons.arrow_back_ios,
-                color: Colors.white,
-                size: 18, // Reduced arrow size
+              IconButton(
+                icon: const Icon(
+                  Icons.arrow_back_ios,
+                  color: Colors.white,
+                  size: 18,
+                ),
+                onPressed: _scrollPrevious,
               ),
-              const SizedBox(width: 4.0), // Reduced spacing
               Expanded(
                 child: SizedBox(
                   height: 120,
                   child: ListView.builder(
+                    controller: _scrollController,
                     scrollDirection: Axis.horizontal,
                     itemCount: forecasts.length,
                     itemBuilder: (context, index) {
                       final forecast = forecasts[index];
                       return Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 4.0), // Reduced horizontal margin
+                        margin: const EdgeInsets.symmetric(horizontal: 4.0),
                         padding: const EdgeInsets.all(12.0),
-                        width: 75, // Reduced width for each forecast card
+                        width: 75,
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(20),
@@ -132,7 +168,12 @@ class WeatherApp extends StatelessWidget {
                           children: <Widget>[
                             Text(
                               '${forecast['temp']}°C',
-                              style: const TextStyle(color: Colors.white, fontSize: 16),
+                              style: GoogleFonts.openSans(
+                                textStyle: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                ),
+                              ),
                             ),
                             const SizedBox(height: 8.0),
                             Image.asset(
@@ -143,7 +184,12 @@ class WeatherApp extends StatelessWidget {
                             const SizedBox(height: 8.0),
                             Text(
                               forecast['day'],
-                              style: const TextStyle(color: Colors.white, fontSize: 14),
+                              style: GoogleFonts.openSans(
+                                textStyle: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                ),
+                              ),
                             ),
                           ],
                         ),
@@ -152,11 +198,13 @@ class WeatherApp extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(width: 4.0), // Reduced spacing
-              const Icon(
-                Icons.arrow_forward_ios,
-                color: Colors.white,
-                size: 18, // Reduced arrow size
+              IconButton(
+                icon: const Icon(
+                  Icons.arrow_forward_ios,
+                  color: Colors.white,
+                  size: 18,
+                ),
+                onPressed: _scrollNext,
               ),
             ],
           ),
@@ -173,38 +221,44 @@ class WeatherApp extends StatelessWidget {
         color: Colors.white.withOpacity(0.15),
         borderRadius: BorderRadius.circular(25),
       ),
-      child: const Column(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Row(
             children: [
-              Icon(Icons.waves, color: Colors.white70, size: 16),
-              SizedBox(width: 8.0),
+              const Icon(Icons.waves, color: Colors.white70, size: 16),
+              const SizedBox(width: 8.0),
               Text(
                 'AIR QUALITY',
-                style: TextStyle(color: Colors.white70, fontSize: 12),
+                style: GoogleFonts.openSans(
+                  textStyle: const TextStyle(color: Colors.white70, fontSize: 12),
+                ),
               ),
             ],
           ),
-          SizedBox(height: 8.0),
+          const SizedBox(height: 8.0),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Text(
                 '3-Low Health Risk',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+                style: GoogleFonts.openSans(
+                  textStyle: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
-              Icon(Icons.arrow_forward_ios, color: Colors.white, size: 16),
+              const Icon(Icons.arrow_forward_ios, color: Colors.white, size: 16),
             ],
           ),
-          SizedBox(height: 8.0),
+          const SizedBox(height: 8.0),
           Text(
             'See more',
-            style: TextStyle(color: Colors.white70, fontSize: 14),
+            style: GoogleFonts.openSans(
+              textStyle: const TextStyle(color: Colors.white70, fontSize: 14),
+            ),
           ),
         ],
       ),
@@ -263,23 +317,29 @@ class WeatherApp extends StatelessWidget {
               const SizedBox(width: 8.0),
               Text(
                 title,
-                style: const TextStyle(color: Colors.white70, fontSize: 12),
+                style: GoogleFonts.openSans(
+                  textStyle: const TextStyle(color: Colors.white70, fontSize: 12),
+                ),
               ),
             ],
           ),
           const SizedBox(height: 8.0),
           Text(
             value,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
+            style: GoogleFonts.openSans(
+              textStyle: const TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
           const SizedBox(height: 4.0),
           Text(
             subtitle,
-            style: const TextStyle(color: Colors.white70, fontSize: 14),
+            style: GoogleFonts.openSans(
+              textStyle: const TextStyle(color: Colors.white70, fontSize: 14),
+            ),
           ),
         ],
       ),
